@@ -25,7 +25,7 @@ touchpad, audio, full CPU clocks and working screen brightness.
 | Component | Details | Status |
 |---|---|---|
 | CPU | Intel Core i7-13620H (6P + 4E, 16 threads, Raptor Lake) | ✅ full 4.9 GHz (CPUFriend) |
-| Discrete GPU | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 1.14.7) |
+| Discrete GPU | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 2.0.1) |
 | Integrated GPU | Intel UHD | ❌ disabled (`disable-gpu`) |
 | Display | 1920×1200, wired to the NVIDIA GPU | ✅ brightness control (`nvrmacpibl=1`) |
 | Wi-Fi | Intel AX211 CNVi (8086:51F1) | ✅ native Wi-Fi, system Wi-Fi toggle |
@@ -43,8 +43,8 @@ touchpad, audio, full CPU clocks and working screen brightness.
 |---|---|---|
 | CPU single-core | 2525 | 2525 |
 | CPU multi-core | 11187 | 11247 |
-| OpenCL | 25547 | 27062 |
-| Metal | 58198 | ❌ crashes (driver MPSGraph bug) |
+| OpenCL | 25547 | 26275 (driver 2.0.1) |
+| Metal | 58198 (driver 1.13) | **65611** (driver 2.0.1) |
 
 Before the CPU fix: 1191 / 6396.
 
@@ -63,11 +63,11 @@ Before the CPU fix: 1191 / 6396.
   ```
 - Current **boot-args**:
   ```
-  -v debug=0x100 keepsyms=1 -vi2c-force-polling -dbgenhdbg -dbgenhiolog -dbgenhbeta ctrsmt=full
+  debug=0x100 keepsyms=1 -vi2c-force-polling -dbgenhdbg -dbgenhiolog -dbgenhbeta ctrsmt=full
   nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth amfi_get_out_of_my_way=0x1 amfi=0x80
   -btlfxallowanyaddr ipc_control_port_options=0 nvrmacpibl=1
   ```
-  `-dbgenh*` (DebugEnhancer) and `-btlfxallowanyaddr` are for debugging only and can be removed. `-v` shows the boot log.
+  `-dbgenh*` (DebugEnhancer) and `-btlfxallowanyaddr` are for debugging only and can be removed. Add `-v` if you want to see the boot log (removed here for a clean boot).
 
 ## Kexts, drivers and download sources
 
@@ -111,7 +111,7 @@ Before the CPU fix: 1191 / 6396.
 
 | Item | Version | Source |
 |---|---|---|
-| NVIDIA driver (**1401** app) | 1.14.7 | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app: [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
+| NVIDIA driver (**1401** app) | 2.0.1 (first release with official Tahoe support) | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app: [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
 | VoodooHDA (audio) | 3.6.8 | [CloverHackyColor/VoodooHDA Release368](https://github.com/CloverHackyColor/VoodooHDA/releases) → install to `/Library/Extensions` |
 | OpenCore Legacy Patcher (Wi-Fi root patch) | Sequoia: 2.5.1, Tahoe: **3.0.0-rc.3** | [dortania/OpenCore-Legacy-Patcher](https://github.com/dortania/OpenCore-Legacy-Patcher/releases) |
 | Vietnamese input method (optional) | Gõ Nhanh 1.0.165 | [khaphanspace/gonhanh.org](https://github.com/khaphanspace/gonhanh.org/releases) |
@@ -124,9 +124,9 @@ Before the CPU fix: 1191 / 6396.
    The app edits the `config.plist` of the OpenCore you booted from: boot-args `nvfb=1 nvaccel=1 nvfbheads=4 ...`,
    blocks `IONDRVSupport`, sets `ResizeGpuBars`, etc.
 3. Reboot. Check System Information → Graphics shows "Metal 3".
-- **Tahoe**: use 1.14.2 or newer. 1.13 crashes WindowServer (`CoreDisplay::Assert`). Avoid 1.14.0.
+- **Tahoe**: use 2.0.0 or newer (official Tahoe support + security fixes). 1.13 crashes WindowServer (`CoreDisplay::Assert`). Avoid 1.14.0.
 - If boot freezes: pick **"1401: Start once without NVIDIA driver"** in the OpenCore menu, or add `-nvoff`.
-- Keep `NullMothLogo.efi` disabled if the machine hangs before the OpenCore picker (1.14.7 disables it automatically).
+- Keep `NullMothLogo.efi` disabled if the machine hangs before the OpenCore picker (1.14.7+ disables it automatically).
 
 ### Screen brightness
 - Add boot-arg **`nvrmacpibl=1`** (available since NullMoth 1.14.1). After boot macOS sees `AppleBacklightDisplay` and
@@ -199,7 +199,10 @@ Add a `Misc > Tools` entry that runs `OpenShell.efi`, named "KHOI PHUC EFI (Rest
   Vulkan library sends `PERF_BOOST` (BOOST_TO_MAX, duration INFINITE). It may be disabled with a `BOOST=0` line in
   `/Library/GPUBundles/nvmtl/nvrm610.conf` (**untested**).
 - Charging stops around 83%: probably the Gigabyte Control Center charge limit (stored in the EC); change it from Windows.
-- Geekbench Metal crashes on Tahoe (MPSGraph Depthwise Conv): NullMoth driver bug.
+- Some MPSGraph depthwise-convolution workloads still hang in the shader translator on 2.0.1 (Geekbench Metal works since 2.0.0).
+- OpenGL is broken: Unigine Heaven 4.0 renders corrupted at ~2 fps.
+- iOS Simulator flickers while scrolling or animating (static screens are fine).
+- Rare kernel panic `decmpfs_pagein_compressed: couldn't ubc_upl_map a single page` (seen with ReportCrash, sample, FaceTime). `-nvrmsmallbar` is untested.
 - No AirDrop, iPhone Mirroring or Sidecar (Intel card has no AWDL).
 - The Intel iGPU cannot be used (the display is wired to the NVIDIA GPU).
 

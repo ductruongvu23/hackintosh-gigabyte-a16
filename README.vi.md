@@ -26,7 +26,7 @@ CPU chạy đủ xung và chỉnh được độ sáng màn hình.
 | Linh kiện | Chi tiết | Trạng thái |
 |---|---|---|
 | CPU | Intel Core i7-13620H (6P + 4E, 16 luồng, Raptor Lake) | ✅ đủ xung 4,9 GHz (CPUFriend) |
-| GPU rời | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 1.14.7) |
+| GPU rời | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 2.0.1) |
 | GPU tích hợp | Intel UHD | ❌ tắt (`disable-gpu`) |
 | Màn hình | 1920×1200, nối GPU NVIDIA | ✅ chỉnh độ sáng (`nvrmacpibl=1`) |
 | Wi-Fi | Intel AX211 CNVi (8086:51F1) | ✅ Wi-Fi gốc, nút Wi-Fi hệ thống |
@@ -44,8 +44,8 @@ CPU chạy đủ xung và chỉnh được độ sáng màn hình.
 |---|---|---|
 | CPU đơn nhân | 2525 | 2525 |
 | CPU đa nhân | 11187 | 11247 |
-| OpenCL | 25547 | 27062 |
-| Metal | 58198 | ❌ crash (lỗi MPSGraph của driver) |
+| OpenCL | 25547 | 26275 (driver 2.0.1) |
+| Metal | 58198 (driver 1.13) | **65611** (driver 2.0.1) |
 
 Trước khi sửa CPU: 1191 / 6396.
 
@@ -64,11 +64,11 @@ Trước khi sửa CPU: 1191 / 6396.
   ```
 - **boot-args** đang dùng:
   ```
-  -v debug=0x100 keepsyms=1 -vi2c-force-polling -dbgenhdbg -dbgenhiolog -dbgenhbeta ctrsmt=full
+  debug=0x100 keepsyms=1 -vi2c-force-polling -dbgenhdbg -dbgenhiolog -dbgenhbeta ctrsmt=full
   nvfb=1 nvaccel=1 nvfbheads=4 -nvkmsnosmooth amfi_get_out_of_my_way=0x1 amfi=0x80
   -btlfxallowanyaddr ipc_control_port_options=0 nvrmacpibl=1
   ```
-  `-dbgenh*` (DebugEnhancer) và `-btlfxallowanyaddr` chỉ dùng khi gỡ lỗi, bỏ được. `-v` hiện log khi boot.
+  `-dbgenh*` (DebugEnhancer) và `-btlfxallowanyaddr` chỉ dùng khi gỡ lỗi, bỏ được. Thêm `-v` nếu muốn xem log khi boot (ở đây đã bỏ cho khởi động gọn).
 
 ## Danh sách kext, driver và nguồn tải
 
@@ -112,7 +112,7 @@ Trước khi sửa CPU: 1191 / 6396.
 
 | Thứ | Bản | Nguồn |
 |---|---|---|
-| Driver NVIDIA (app **1401**) | 1.14.7 | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
+| Driver NVIDIA (app **1401**) | 2.0.1 (bản đầu tiên hỗ trợ Tahoe chính thức) | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
 | VoodooHDA (âm thanh) | 3.6.8 | [CloverHackyColor/VoodooHDA Release368](https://github.com/CloverHackyColor/VoodooHDA/releases) → cài vào `/Library/Extensions` |
 | OpenCore Legacy Patcher (root patch Wi-Fi) | Sequoia: 2.5.1, Tahoe: **3.0.0-rc.3** | [dortania/OpenCore-Legacy-Patcher](https://github.com/dortania/OpenCore-Legacy-Patcher/releases) |
 | Bộ gõ tiếng Việt (tuỳ chọn) | Gõ Nhanh 1.0.165 | [khaphanspace/gonhanh.org](https://github.com/khaphanspace/gonhanh.org/releases) |
@@ -124,9 +124,9 @@ Trước khi sửa CPU: 1191 / 6396.
 2. Tải app **1401** từ [nullmoth/1401](https://github.com/nullmoth/1401/releases), mở và bấm cài driver. App tự sửa
    `config.plist` của OpenCore đang boot: boot-args `nvfb=1 nvaccel=1 nvfbheads=4 ...`, chặn `IONDRVSupport`, `ResizeGpuBars`...
 3. Khởi động lại. Kiểm tra: System Information → Graphics hiện "Metal 3".
-- **Tahoe**: dùng bản ≥ 1.14.2. Bản 1.13 làm WindowServer crash (`CoreDisplay::Assert`). Không dùng 1.14.0.
+- **Tahoe**: dùng bản ≥ 2.0.0 (hỗ trợ Tahoe chính thức + vá bảo mật). Bản 1.13 làm WindowServer crash (`CoreDisplay::Assert`). Không dùng 1.14.0.
 - Nếu boot đơ: trong menu OpenCore chọn **"1401: Start once without NVIDIA driver"**, hoặc thêm `-nvoff`.
-- Không để `NullMothLogo.efi` bật nếu máy treo trước menu OpenCore (1.14.7 tự tắt nó).
+- Không để `NullMothLogo.efi` bật nếu máy treo trước menu OpenCore (từ 1.14.7 tự tắt nó).
 
 ### Độ sáng màn hình
 - Thêm boot-arg **`nvrmacpibl=1`** (có từ NullMoth 1.14.1). Sau khi boot, macOS thấy `AppleBacklightDisplay` và chỉnh được độ sáng.
@@ -198,7 +198,10 @@ Thêm vào `Misc > Tools` một mục chạy `OpenShell.efi` tên "KHOI PHUC EFI
   NullMoth gửi `PERF_BOOST` (BOOST_TO_MAX, thời hạn INFINITE). Có thể tắt thử bằng dòng `BOOST=0` trong
   `/Library/GPUBundles/nvmtl/nvrm610.conf` (**chưa kiểm chứng**).
 - Sạc dừng ~83%: có thể do giới hạn sạc của Gigabyte Control Center (lưu ở EC), chỉnh trong Windows.
-- Geekbench Metal crash trên Tahoe (MPSGraph Depthwise Conv): lỗi driver NullMoth.
+- Một số phép depthwise convolution của MPSGraph vẫn treo trong bộ dịch shader ở 2.0.1 (Geekbench Metal đã chạy từ 2.0.0).
+- OpenGL còn lỗi: Unigine Heaven 4.0 vỡ hình, khoảng 2 fps.
+- iOS Simulator nháy khi lướt hoặc có chuyển động (đứng yên thì mượt).
+- Thỉnh thoảng kernel panic `decmpfs_pagein_compressed: couldn't ubc_upl_map a single page` (gặp khi ReportCrash, sample, FaceTime chạy). Chưa thử `-nvrmsmallbar`.
 - AirDrop, iPhone Mirroring, Sidecar không chạy (card Intel không có AWDL).
 - Không dùng được iGPU Intel (màn hình nối với GPU NVIDIA).
 
