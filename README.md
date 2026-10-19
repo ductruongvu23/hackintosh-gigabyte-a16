@@ -57,7 +57,7 @@ Before the CPU fix: 1191 / 6396.
 | 2.0.1 | Tahoe 26.7.1 | 63794 / 65611 | 26275 / 26229 | first official Tahoe support |
 | 2.1.0 | Tahoe 26.7.1 | 67288 | 27112 | desktop no longer waits for the GPU every frame |
 | 2.3.1 | Tahoe 26.7.1 | 68316 | 27091 | |
-| 2.3.7 | Tahoe 26.7.1 | 67312 / 68553 | – | security release; ~5 min pipeline build before each Metal run |
+| 2.3.7 | Tahoe 26.7.1 | 67312 / 68553 | 26592 | security release; ~5 min pipeline build before each Metal run; Minecraft (OpenGL) shaders work (since 2.3.6) |
 
 Two numbers = two runs. Differences under ~3% are run-to-run noise.
 
