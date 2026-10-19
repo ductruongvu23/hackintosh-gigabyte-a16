@@ -26,7 +26,7 @@ CPU chạy đủ xung và chỉnh được độ sáng màn hình.
 | Linh kiện | Chi tiết | Trạng thái |
 |---|---|---|
 | CPU | Intel Core i7-13620H (6P + 4E, 16 luồng, Raptor Lake) | ✅ đủ xung 4,9 GHz (CPUFriend) |
-| GPU rời | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 2.0.1) |
+| GPU rời | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 2.3.7) |
 | GPU tích hợp | Intel UHD | ❌ tắt (`disable-gpu`) |
 | Màn hình | 1920×1200, nối GPU NVIDIA | ✅ chỉnh độ sáng (`nvrmacpibl=1`) |
 | Wi-Fi | Intel AX211 CNVi (8086:51F1) | ✅ Wi-Fi gốc, nút Wi-Fi hệ thống |
@@ -44,8 +44,8 @@ CPU chạy đủ xung và chỉnh được độ sáng màn hình.
 |---|---|---|
 | CPU đơn nhân | 2525 | 2525 |
 | CPU đa nhân | 11187 | 11247 |
-| OpenCL | 25547 | 26275 (driver 2.0.1) |
-| Metal | 58198 (driver 1.13) | **65611** (driver 2.0.1) |
+| OpenCL | 25547 | 27091 (driver 2.3.x) |
+| Metal | 58198 (driver 1.13) | **68553** (driver 2.3.7) |
 
 Trước khi sửa CPU: 1191 / 6396.
 
@@ -106,13 +106,13 @@ Trước khi sửa CPU: 1191 / 6396.
 |---|---|
 | OpenCore.efi, BOOTx64.efi, OpenRuntime.efi, ResetNvramEntry.efi, OpenShell.efi | [acidanthera/OpenCorePkg 1.0.9](https://github.com/acidanthera/OpenCorePkg/releases) |
 | HfsPlus.efi | [acidanthera/OcBinaryData](https://github.com/acidanthera/OcBinaryData) |
-| NullMothLogo.efi, NullMothSafe.efi | app [1401 / NullMoth](https://github.com/nullmoth/1401/releases) tự thêm khi cài driver |
+| NullMothSafe.efi (NullMothLogo.efi đã bị bỏ từ 2.2.0) | app [1401 / NullMoth](https://github.com/nullmoth/1401/releases) tự thêm khi cài driver |
 
 ### Cài trong macOS (không nằm trong EFI)
 
 | Thứ | Bản | Nguồn |
 |---|---|---|
-| Driver NVIDIA (app **1401**) | 2.0.1 (bản đầu tiên hỗ trợ Tahoe chính thức) | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
+| Driver NVIDIA (app **1401**) | 2.3.7 (hỗ trợ Tahoe từ 2.0.0) | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
 | VoodooHDA (âm thanh) | 3.6.8 | [CloverHackyColor/VoodooHDA Release368](https://github.com/CloverHackyColor/VoodooHDA/releases) → cài vào `/Library/Extensions` |
 | OpenCore Legacy Patcher (root patch Wi-Fi) | Sequoia: 2.5.1, Tahoe: **3.0.0-rc.3** | [dortania/OpenCore-Legacy-Patcher](https://github.com/dortania/OpenCore-Legacy-Patcher/releases) |
 | Bộ gõ tiếng Việt (tuỳ chọn) | Gõ Nhanh 1.0.165 | [khaphanspace/gonhanh.org](https://github.com/khaphanspace/gonhanh.org/releases) |
@@ -198,9 +198,13 @@ Thêm vào `Misc > Tools` một mục chạy `OpenShell.efi` tên "KHOI PHUC EFI
   NullMoth gửi `PERF_BOOST` (BOOST_TO_MAX, thời hạn INFINITE). Có thể tắt thử bằng dòng `BOOST=0` trong
   `/Library/GPUBundles/nvmtl/nvrm610.conf` (**chưa kiểm chứng**).
 - Sạc dừng ~83%: có thể do giới hạn sạc của Gigabyte Control Center (lưu ở EC), chỉnh trong Windows.
-- Một số phép depthwise convolution của MPSGraph vẫn treo trong bộ dịch shader ở 2.0.1 (Geekbench Metal đã chạy từ 2.0.0).
+- Một số phép depthwise convolution của MPSGraph vẫn treo trong bộ dịch shader (Geekbench Metal đã chạy từ 2.0.0).
+- Driver 2.3.7: mỗi lần chạy Geekbench Metal mất khoảng 5 phút dựng pipeline trước khi chấm (điểm không đổi, 67–68k).
+- Cắm nóng màn ngoài HDMI: driver bật cổng nhưng macOS không thêm màn hình (2.3.x). Cách tạm: cắm trước khi khởi động.
+- Driver không báo % sử dụng, xung nhịp, nhiệt độ GPU cho macOS (Activity Monitor, TMOG, Stats đều trống phần GPU).
+- Loa trong nhỏ hơn Windows khi dùng VoodooHDA; dùng eqMac (tăng âm lượng trên 100%) đỡ hơn.
 - OpenGL còn lỗi: Unigine Heaven 4.0 vỡ hình, khoảng 2 fps.
-- iOS Simulator nháy khi lướt hoặc có chuyển động (đứng yên thì mượt).
+- iOS Simulator nháy khi lướt: sửa bằng `NVMTL_SCHEDULE_AFTER_SURFACE_WRITES=1` trong `/Library/GPUBundles/nvmtl/nvrm610.conf`. Đặt giữa `# --- my settings, kept on update ---` và `# --- end my settings ---` (từ 2.1.0), nếu không bản cập nhật driver sẽ xoá mất.
 - Thỉnh thoảng kernel panic `decmpfs_pagein_compressed: couldn't ubc_upl_map a single page` (gặp khi ReportCrash, sample, FaceTime chạy). Chưa thử `-nvrmsmallbar`.
 - AirDrop, iPhone Mirroring, Sidecar không chạy (card Intel không có AWDL).
 - Không dùng được iGPU Intel (màn hình nối với GPU NVIDIA).

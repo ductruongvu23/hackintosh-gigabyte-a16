@@ -25,7 +25,7 @@ touchpad, audio, full CPU clocks and working screen brightness.
 | Component | Details | Status |
 |---|---|---|
 | CPU | Intel Core i7-13620H (6P + 4E, 16 threads, Raptor Lake) | ✅ full 4.9 GHz (CPUFriend) |
-| Discrete GPU | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 2.0.1) |
+| Discrete GPU | NVIDIA RTX 5050 Laptop 8GB (10DE:2D98) | ✅ Metal 3 (NullMoth 2.3.7) |
 | Integrated GPU | Intel UHD | ❌ disabled (`disable-gpu`) |
 | Display | 1920×1200, wired to the NVIDIA GPU | ✅ brightness control (`nvrmacpibl=1`) |
 | Wi-Fi | Intel AX211 CNVi (8086:51F1) | ✅ native Wi-Fi, system Wi-Fi toggle |
@@ -43,8 +43,8 @@ touchpad, audio, full CPU clocks and working screen brightness.
 |---|---|---|
 | CPU single-core | 2525 | 2525 |
 | CPU multi-core | 11187 | 11247 |
-| OpenCL | 25547 | 26275 (driver 2.0.1) |
-| Metal | 58198 (driver 1.13) | **65611** (driver 2.0.1) |
+| OpenCL | 25547 | 27091 (driver 2.3.x) |
+| Metal | 58198 (driver 1.13) | **68553** (driver 2.3.7) |
 
 Before the CPU fix: 1191 / 6396.
 
@@ -105,13 +105,13 @@ Before the CPU fix: 1191 / 6396.
 |---|---|
 | OpenCore.efi, BOOTx64.efi, OpenRuntime.efi, ResetNvramEntry.efi, OpenShell.efi | [acidanthera/OpenCorePkg 1.0.9](https://github.com/acidanthera/OpenCorePkg/releases) |
 | HfsPlus.efi | [acidanthera/OcBinaryData](https://github.com/acidanthera/OcBinaryData) |
-| NullMothLogo.efi, NullMothSafe.efi | added by the [1401 / NullMoth](https://github.com/nullmoth/1401/releases) app when installing the driver |
+| NullMothSafe.efi (NullMothLogo.efi was removed in 2.2.0) | added by the [1401 / NullMoth](https://github.com/nullmoth/1401/releases) app when installing the driver |
 
 ### Installed inside macOS (not in the EFI)
 
 | Item | Version | Source |
 |---|---|---|
-| NVIDIA driver (**1401** app) | 2.0.1 (first release with official Tahoe support) | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app: [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
+| NVIDIA driver (**1401** app) | 2.3.7 (Tahoe supported since 2.0.0) | [nullmoth/nvidia-macos-driver](https://github.com/nullmoth/nvidia-macos-driver/releases) (app: [nullmoth/1401](https://github.com/nullmoth/1401/releases)) |
 | VoodooHDA (audio) | 3.6.8 | [CloverHackyColor/VoodooHDA Release368](https://github.com/CloverHackyColor/VoodooHDA/releases) → install to `/Library/Extensions` |
 | OpenCore Legacy Patcher (Wi-Fi root patch) | Sequoia: 2.5.1, Tahoe: **3.0.0-rc.3** | [dortania/OpenCore-Legacy-Patcher](https://github.com/dortania/OpenCore-Legacy-Patcher/releases) |
 | Vietnamese input method (optional) | Gõ Nhanh 1.0.165 | [khaphanspace/gonhanh.org](https://github.com/khaphanspace/gonhanh.org/releases) |
@@ -199,9 +199,13 @@ Add a `Misc > Tools` entry that runs `OpenShell.efi`, named "KHOI PHUC EFI (Rest
   Vulkan library sends `PERF_BOOST` (BOOST_TO_MAX, duration INFINITE). It may be disabled with a `BOOST=0` line in
   `/Library/GPUBundles/nvmtl/nvrm610.conf` (**untested**).
 - Charging stops around 83%: probably the Gigabyte Control Center charge limit (stored in the EC); change it from Windows.
-- Some MPSGraph depthwise-convolution workloads still hang in the shader translator on 2.0.1 (Geekbench Metal works since 2.0.0).
+- Some MPSGraph depthwise-convolution workloads still hang in the shader translator (Geekbench Metal works since 2.0.0).
+- Driver 2.3.7: every Geekbench Metal run spends ~5 minutes building pipelines before scoring (score unchanged, 67–68k).
+- Hot-plugging an HDMI monitor: the driver lights the port but macOS never adds the display (2.3.x). Workaround: connect it before booting.
+- No GPU utilization, clock or temperature is reported to macOS (Activity Monitor, TMOG, Stats show nothing for the GPU).
+- Internal speakers are quieter than on Windows with VoodooHDA; eqMac (volume above 100%) helps.
 - OpenGL is broken: Unigine Heaven 4.0 renders corrupted at ~2 fps.
-- iOS Simulator flickers while scrolling or animating (static screens are fine).
+- iOS Simulator flickers while scrolling: fixed by `NVMTL_SCHEDULE_AFTER_SURFACE_WRITES=1` in `/Library/GPUBundles/nvmtl/nvrm610.conf`. Put it between `# --- my settings, kept on update ---` and `# --- end my settings ---` (2.1.0+) or driver updates remove it.
 - Rare kernel panic `decmpfs_pagein_compressed: couldn't ubc_upl_map a single page` (seen with ReportCrash, sample, FaceTime). `-nvrmsmallbar` is untested.
 - No AirDrop, iPhone Mirroring or Sidecar (Intel card has no AWDL).
 - The Intel iGPU cannot be used (the display is wired to the NVIDIA GPU).
