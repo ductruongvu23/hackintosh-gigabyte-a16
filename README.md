@@ -217,7 +217,7 @@ Add a `Misc > Tools` entry that runs `OpenShell.efi`, named "KHOI PHUC EFI (Rest
 - Hot-plugging an HDMI monitor: the driver lights the port but macOS never adds the display (2.3.x). Workaround: connect it before booting.
 - No GPU utilization, clock or temperature is reported to macOS (Activity Monitor, TMOG, Stats show nothing for the GPU).
 - Internal speakers are quieter than on Windows with VoodooHDA; eqMac (volume above 100%) helps.
-- OpenGL is broken: Unigine Heaven 4.0 renders corrupted at ~2 fps.
+- OpenGL is broken: Unigine Heaven 4.0 renders corrupted at ~2–3 fps (still on driver 2.3.7).
 - iOS Simulator flickers while scrolling: fixed by `NVMTL_SCHEDULE_AFTER_SURFACE_WRITES=1` in `/Library/GPUBundles/nvmtl/nvrm610.conf`. Put it between `# --- my settings, kept on update ---` and `# --- end my settings ---` (2.1.0+) or driver updates remove it.
 - Rare kernel panic `decmpfs_pagein_compressed: couldn't ubc_upl_map a single page` (seen with ReportCrash, sample, FaceTime). `-nvrmsmallbar` is untested.
 - No AirDrop, iPhone Mirroring or Sidecar (Intel card has no AWDL).

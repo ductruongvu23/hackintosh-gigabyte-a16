@@ -216,7 +216,7 @@ Thêm vào `Misc > Tools` một mục chạy `OpenShell.efi` tên "KHOI PHUC EFI
 - Cắm nóng màn ngoài HDMI: driver bật cổng nhưng macOS không thêm màn hình (2.3.x). Cách tạm: cắm trước khi khởi động.
 - Driver không báo % sử dụng, xung nhịp, nhiệt độ GPU cho macOS (Activity Monitor, TMOG, Stats đều trống phần GPU).
 - Loa trong nhỏ hơn Windows khi dùng VoodooHDA; dùng eqMac (tăng âm lượng trên 100%) đỡ hơn.
-- OpenGL còn lỗi: Unigine Heaven 4.0 vỡ hình, khoảng 2 fps.
+- OpenGL còn lỗi: Unigine Heaven 4.0 vỡ hình, khoảng 2–3 fps (vẫn vậy ở driver 2.3.7).
 - iOS Simulator nháy khi lướt: sửa bằng `NVMTL_SCHEDULE_AFTER_SURFACE_WRITES=1` trong `/Library/GPUBundles/nvmtl/nvrm610.conf`. Đặt giữa `# --- my settings, kept on update ---` và `# --- end my settings ---` (từ 2.1.0), nếu không bản cập nhật driver sẽ xoá mất.
 - Thỉnh thoảng kernel panic `decmpfs_pagein_compressed: couldn't ubc_upl_map a single page` (gặp khi ReportCrash, sample, FaceTime chạy). Chưa thử `-nvrmsmallbar`.
 - AirDrop, iPhone Mirroring, Sidecar không chạy (card Intel không có AWDL).
