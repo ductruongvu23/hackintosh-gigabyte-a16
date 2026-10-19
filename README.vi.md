@@ -58,7 +58,7 @@ Trước khi sửa CPU: 1191 / 6396.
 | 2.0.1 | Tahoe 26.7.1 | 63794 / 65611 | 26275 / 26229 | bản đầu tiên hỗ trợ Tahoe chính thức |
 | 2.1.0 | Tahoe 26.7.1 | 67288 | 27112 | desktop không còn chờ GPU ở mỗi khung hình |
 | 2.3.1 | Tahoe 26.7.1 | 68316 | 27091 | |
-| 2.3.7 | Tahoe 26.7.1 | 67312 / 68553 | 26592 | bản vá bảo mật; mất khoảng 5 phút dựng pipeline trước mỗi lần chạy Metal; shader Minecraft (OpenGL) chạy được (từ 2.3.6) |
+| 2.3.7 | Tahoe 26.7.1 | 67312 / 68553 | 26592 (chạy pin) | bản vá bảo mật; mất khoảng 5 phút dựng pipeline trước mỗi lần chạy Metal |
 
 Hai số là hai lần chạy. Chênh lệch dưới khoảng 3% là dao động giữa các lần chạy.
 
