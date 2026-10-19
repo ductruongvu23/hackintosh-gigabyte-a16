@@ -43,10 +43,23 @@ touchpad, audio, full CPU clocks and working screen brightness.
 |---|---|---|
 | CPU single-core | 2525 | 2525 |
 | CPU multi-core | 11187 | 11247 |
-| OpenCL | 25547 | 27091 (driver 2.3.x) |
+| OpenCL | 25547 | 27091 (driver 2.3.1) |
 | Metal | 58198 (driver 1.13) | **68553** (driver 2.3.7) |
 
 Before the CPU fix: 1191 / 6396.
+
+### GPU score by NullMoth driver version (Geekbench 6, same laptop)
+
+| Driver | macOS | Metal | OpenCL | Notes |
+|---|---|---|---|---|
+| 1.13.0 | Sequoia 15.8.1 | 58198 | 25547 | first working setup |
+| 1.15.0 | Tahoe 26.7.1 | ❌ crash | 27062 | MPSGraph pipeline fails |
+| 2.0.1 | Tahoe 26.7.1 | 63794 / 65611 | 26275 / 26229 | first official Tahoe support |
+| 2.1.0 | Tahoe 26.7.1 | 67288 | 27112 | desktop no longer waits for the GPU every frame |
+| 2.3.1 | Tahoe 26.7.1 | 68316 | 27091 | |
+| 2.3.7 | Tahoe 26.7.1 | 67312 / 68553 | – | security release; ~5 min pipeline build before each Metal run |
+
+Two numbers = two runs. Differences under ~3% are run-to-run noise.
 
 ## BIOS and setup
 

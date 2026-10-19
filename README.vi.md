@@ -44,10 +44,23 @@ CPU chạy đủ xung và chỉnh được độ sáng màn hình.
 |---|---|---|
 | CPU đơn nhân | 2525 | 2525 |
 | CPU đa nhân | 11187 | 11247 |
-| OpenCL | 25547 | 27091 (driver 2.3.x) |
+| OpenCL | 25547 | 27091 (driver 2.3.1) |
 | Metal | 58198 (driver 1.13) | **68553** (driver 2.3.7) |
 
 Trước khi sửa CPU: 1191 / 6396.
+
+### Điểm GPU theo từng bản driver NullMoth (Geekbench 6, cùng một máy)
+
+| Driver | macOS | Metal | OpenCL | Ghi chú |
+|---|---|---|---|---|
+| 1.13.0 | Sequoia 15.8.1 | 58198 | 25547 | lần đầu chạy được |
+| 1.15.0 | Tahoe 26.7.1 | ❌ crash | 27062 | lỗi pipeline MPSGraph |
+| 2.0.1 | Tahoe 26.7.1 | 63794 / 65611 | 26275 / 26229 | bản đầu tiên hỗ trợ Tahoe chính thức |
+| 2.1.0 | Tahoe 26.7.1 | 67288 | 27112 | desktop không còn chờ GPU ở mỗi khung hình |
+| 2.3.1 | Tahoe 26.7.1 | 68316 | 27091 | |
+| 2.3.7 | Tahoe 26.7.1 | 67312 / 68553 | – | bản vá bảo mật; mất khoảng 5 phút dựng pipeline trước mỗi lần chạy Metal |
+
+Hai số là hai lần chạy. Chênh lệch dưới khoảng 3% là dao động giữa các lần chạy.
 
 ## BIOS và cài đặt
 
